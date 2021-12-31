@@ -1,28 +1,75 @@
-# 🐃 Yak Spirit Frontend
+# `🐃 @yak-spirit/yak-swap-ui`
 
-An open-source interface for Yield Yak Swap. Features that you always want to:
-1 theming, 2 settings & auto-update, 3 ..., 4 ...
+A reusable React component for swapping with Yield Yak Router. The YY Router can be
+found [here](https://github.com/yieldyak/yak-aggregator).
 
-## Motivation
+## Usage
 
-Improve building your faster **prototyping** by using Vite, TypeScript, React, TailwindCSS, Firebase.
+#### Install
 
-This starter uses following libraries:
+First install the required peer dependencies into your React project.
 
-- Vite
-- React
-- TypeScript
-- Tailwind CSS
-  - daisyUI
-- ESLint
-- Prettier
-- Cypress (for E2E and Component Testing)
-- Vitest (for unit tests)
+```
+yarn add web3 bignumber.js react-use react-countdown-circle-timer valtio react-number-format @headlessui/react classnames react-windowed-select react-moralis moralis daisyui
+```
 
-## Set up
+Wrap your app in MoralisProvider, provide appId & serverId (server should support Avalanche Mainnet)
+You can find instructions here: https://github.com/MoralisWeb3/react-moralis
 
-```shell
-mv .env.example .env.local
+Install tailwind (use as guidance https://tailwindcss.com/docs/guides/create-react-app)
+
+```
+yarn add -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+```
+
+Configure tailwind.config.js
+Add tailwind directives to your CSS and import .css file
+
+! if you have webpack >= 5 or cra >= 5, you should import some ...
+
+Then install the package.
+
+```
+yarn add @dragoonzx/yak-swap-ui
+```
+
+#### Add the Swap Component
+
+To embed the `YakSwap` component into your application,
+you should do all prerequisite installation
+and then you can just use component
+For example,
+
+```javascript
+import YakSwap from '@yak-spirit/yak-swap-ui';
+
+<YakSwap />;
+```
+
+All of the complexity of communicating with the YY Router and managing
+its data is handled internally by the component.
+
+#### Referral Fees
+
+To earn referral fees ...
+
+## Developing
+
+#### Install dependencies
+
+```
 yarn
+```
+
+#### Build
+
+```
+yarn build
+```
+
+## Run the example app
+
+```
 yarn dev
 ```

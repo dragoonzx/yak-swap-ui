@@ -26,12 +26,12 @@ const SwapSettings = ({ btnStyle }: { btnStyle: any }) => {
 
   const content = (
     <div className="overflow-hidden rounded-lg shadow-lg w-70 ring-1 ring-black ring-opacity-5">
-      <div className="relative flex flex-col w-full p-7 lg:grid-cols-2 text-base-content">
+      <div className="relative flex flex-col w-full p-7 lg:grid-cols-2 bg-base-100 text-base-content">
         <div className="mb-4">
           <p className="text-sm mb-2">Slippage tolerance</p>
           <NumberFormat
             value={swapSettingsSnap.slippage}
-            className="input input-bordered border-primary-focus p-2 w-16 w-full h-full"
+            className="input input-bordered border-primary-focus p-2 w-16 h-full"
             displayType="input"
             allowNegative={false}
             suffix="%"

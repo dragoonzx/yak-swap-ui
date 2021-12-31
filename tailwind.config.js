@@ -23,20 +23,6 @@ module.exports = {
   variants: {},
   plugins: [require('daisyui')],
   daisyui: {
-    themes: [
-      'forest',
-      'dark',
-      'light',
-      'bumblebee',
-      'emerald',
-      'synthwave',
-      'retro',
-      'valentine',
-      'lofi',
-      'pastel',
-      'wireframe',
-      'luxury',
-      'dracula',
-    ],
+    themes: ['forest', 'light'],
   },
 };

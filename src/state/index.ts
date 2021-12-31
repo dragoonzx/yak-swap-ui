@@ -40,7 +40,7 @@ export const swapOfferState: ISwapOfferState = proxy({
 });
 
 interface IUserState {
-  provider: any;
+  chainId: number;
   userAddress: string;
   balances: {
     native: string;
@@ -49,7 +49,7 @@ interface IUserState {
 }
 
 export const userState: IUserState = proxy({
-  provider: null,
+  chainId: 0,
   userAddress: '',
   balances: {
     native: '0',

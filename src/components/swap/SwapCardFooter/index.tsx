@@ -1,5 +1,7 @@
+import { useMemo } from 'react';
 import { swapSettings, swapState } from '~/state';
 import { WAVAX, ZERO_ADDRESS } from '~/utils/constants';
+import { formatCurrency } from '~/utils/formatters';
 
 interface ISwapCardFooter {
   usdPrices: any;
@@ -8,6 +10,49 @@ interface ISwapCardFooter {
 }
 
 const SwapCardFooter = ({ usdPrices, priceImpact, gasPrice }: ISwapCardFooter) => {
+  const gasCost = usdPrices ? (gasPrice * usdPrices[WAVAX.toLowerCase()]?.usd).toFixed(2) : 0;
+  const minToReceiveUsd = useMemo(() => {
+    return usdPrices
+      ? usdPrices[
+          swapState.tokenOut.address.toLowerCase() === ZERO_ADDRESS
+            ? WAVAX.toLowerCase()
+            : swapState.tokenOut.address.toLowerCase()
+        ]?.usd *
+          swapState.amountOut >
+        0
+        ? formatCurrency(
+            Number(
+              (
+                usdPrices[
+                  swapState.tokenOut.address.toLowerCase() === ZERO_ADDRESS
+                    ? WAVAX.toLowerCase()
+                    : swapState.tokenOut.address.toLowerCase()
+                ]?.usd *
+                swapState.amountOut *
+                (1 - swapSettings.slippage / 100)
+              ).toFixed(8)
+            )
+          )
+        : formatCurrency(
+            Number(
+              (
+                usdPrices[
+                  swapState.tokenOut.address.toLowerCase() === ZERO_ADDRESS
+                    ? WAVAX.toLowerCase()
+                    : swapState.tokenOut.address.toLowerCase()
+                ]?.usd *
+                swapState.amountOut *
+                (1 - swapSettings.slippage / 100)
+              ).toPrecision(8)
+            )
+          )
+      : '';
+  }, [swapState.amountOut, usdPrices]);
+
+  const minToReceive =
+    swapState.amountOut * 0.98 > 0
+      ? Number((swapState.amountOut * 0.98).toFixed(8)).toLocaleString()
+      : (swapState.amountOut * 0.98).toPrecision(8).toLocaleString();
   return (
     <div className="font-light">
       {/* <div className="flex justify-between text-sm">
@@ -32,58 +77,28 @@ const SwapCardFooter = ({ usdPrices, priceImpact, gasPrice }: ISwapCardFooter) =
       <div className="flex justify-between text-sm">
         <span>Price impact</span>
         <span>
-          <span className="font-bold">{priceImpact.toFixed(4)} %</span>
+          <span className="flex font-bold">
+            {priceImpact.toFixed(4)} %{/* <SpiritLoader size="small" /> */}
+          </span>
         </span>
       </div>
       <div className="flex justify-between text-sm">
         <span>Gas cost</span>
         <span>
-          <span className="font-light text-xs mr-2">
-            ~${usdPrices ? (gasPrice * usdPrices[WAVAX.toLowerCase()]?.usd).toFixed(2) : 0}
-          </span>
-          <span className="font-bold">{gasPrice.toPrecision(2)} AVAX</span>
+          <span className="font-light text-xs">~${gasCost}</span>
+          <span className="font-bold ml-2">{gasPrice.toPrecision(2)} AVAX</span>
         </span>
       </div>
       <div className="flex justify-between text-sm">
         <span>Min. to receive</span>
         <span>
-          <span className="font-light text-xs mr-2">
+          <span className="font-light text-xs">
             ~$
-            {usdPrices
-              ? usdPrices[
-                  swapState.tokenOut.address.toLowerCase() === ZERO_ADDRESS
-                    ? WAVAX.toLowerCase()
-                    : swapState.tokenOut.address.toLowerCase()
-                ]?.usd *
-                  swapState.amountOut >
-                0
-                ? Number(
-                    (
-                      usdPrices[
-                        swapState.tokenOut.address.toLowerCase() === ZERO_ADDRESS
-                          ? WAVAX.toLowerCase()
-                          : swapState.tokenOut.address.toLowerCase()
-                      ]?.usd *
-                      swapState.amountOut *
-                      (1 - swapSettings.slippage / 100)
-                    ).toFixed(8)
-                  ).toLocaleString()
-                : (
-                    usdPrices[
-                      swapState.tokenOut.address.toLowerCase() === ZERO_ADDRESS
-                        ? WAVAX.toLowerCase()
-                        : swapState.tokenOut.address.toLowerCase()
-                    ]?.usd *
-                    swapState.amountOut *
-                    (1 - swapSettings.slippage / 100)
-                  ).toPrecision(8)
-              : ''}
+            {minToReceiveUsd}
           </span>
-          <span className="font-bold">
-            {swapState.amountOut * 0.98 > 0
-              ? Number((swapState.amountOut * 0.98).toFixed(8)).toLocaleString()
-              : (swapState.amountOut * 0.98).toPrecision(8).toLocaleString()}{' '}
-            {swapState.tokenOut.symbol}
+          <span className="font-bold ml-2">
+            {' '}
+            {minToReceive} {swapState.tokenOut.symbol}
           </span>
         </span>
       </div>

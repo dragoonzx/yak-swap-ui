@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Web3 from 'web3';
 // import { useMoralis, useMoralisCloudFunction } from 'react-moralis';
 import { fetchOnchainPrices } from '~/api/fetchPrices';
@@ -13,20 +13,12 @@ import SwapCardFooter from '../SwapCardFooter';
 import SwapCardButton from '../SwapCardButton';
 import SwapCardInputs from '../SwapCardInputs';
 import SwapCardInputsSwapper from '../SwapCardInputsSwapper';
-import { swapOfferState, swapState, syncState, userState, useSnapshot } from '~/state';
+import { swapOfferState, swapState, syncState, useSnapshot } from '~/state';
 import { getUsdPrices } from '~/api/getUsdPrices';
 
 export const SwapCard = (props: SwapProps) => {
   // const { data: avgGasArr } = useMoralisCloudFunction('getAvgGas');
   const tokenList = props.tokenList ?? defaultTokenList;
-
-  useEffect(() => {
-    userState.userAddress = props.userAddress ?? '';
-  }, [props.userAddress]);
-
-  useEffect(() => {
-    userState.provider = props.provider;
-  }, [props.provider]);
 
   const [usdPrices, setUsdPrices] = useState<Record<string, Record<'usd', number>> | null>(null);
 
@@ -34,9 +26,13 @@ export const SwapCard = (props: SwapProps) => {
 
   const getPrices = async () => {
     swapState.loading = true;
+    props.onQuotesLoading && props.onQuotesLoading(true);
     syncState.sync = false;
 
     if (!swapState.amountIn) {
+      swapState.loading = false;
+      props.onQuotesLoading && props.onQuotesLoading(false);
+      syncState.sync = true;
       return;
     }
 
@@ -52,17 +48,19 @@ export const SwapCard = (props: SwapProps) => {
     const results = x!.map((v) => {
       return {
         ...v,
-        amountOut: !new BigNumber(v.amountOut).isZero()
+        formattedAmountOut: !new BigNumber(v.amountOut).isZero()
           ? // TODO: check small numbers
-            new BigNumber(v.amountOut).div(new BigNumber(10).pow(swapState.tokenOut.decimals)).toFixed(2)
+            new BigNumber(v.amountOut).div(new BigNumber(10).pow(swapState.tokenOut.decimals)).toFixed(8)
           : 0,
       };
     });
-    const amountOutValues = results.map((v) => Number(v.amountOut));
+    props.onOfferReceive && props.onOfferReceive(results);
+
+    const amountOutValues = results.map((v) => Number(v.formattedAmountOut));
 
     swapState.amountOut = Math.max(...amountOutValues);
 
-    results.sort((dexA, dexB) => Number(dexB.amountOut) - Number(dexA.amountOut));
+    results.sort((dexA, dexB) => Number(dexB.formattedAmountOut) - Number(dexA.formattedAmountOut));
 
     const yakOffer = x?.find((v) => v.platform === YIELD_YAK_PLATFORM)?.yakOffer;
     swapOfferState.yakOffer = yakOffer;
@@ -74,6 +72,7 @@ export const SwapCard = (props: SwapProps) => {
 
     syncState.sync = true;
     swapState.loading = false;
+    props.onQuotesLoading && props.onQuotesLoading(false);
   };
 
   const swapSnap = useSnapshot(swapState);
@@ -87,13 +86,6 @@ export const SwapCard = (props: SwapProps) => {
     [swapSnap.tokenIn, swapSnap.tokenOut, swapSnap.amountIn]
   );
 
-  // const inputTokenUserBalance = userBalances.tokens.find(
-  //   (v) => v.token_address.toLowerCase() === tokens.tokenIn.address.toLowerCase()
-  // );
-  // const outputTokenUserBalance = userBalances.tokens.find(
-  //   (v) => v.token_address.toLowerCase() === tokens.tokenOut.address.toLowerCase()
-  // );
-
   const marketPrice = usdPrices
     ? swapState.amountIn *
       usdPrices[
@@ -102,15 +94,20 @@ export const SwapCard = (props: SwapProps) => {
           : swapState.tokenIn.address.toLowerCase()
       ]?.usd
     : null;
-  const receivedPrice = usdPrices
-    ? swapState.amountOut *
-      usdPrices[
-        swapState.tokenOut.address.toLowerCase() === ZERO_ADDRESS
-          ? WAVAX.toLowerCase()
-          : swapState.tokenOut.address.toLowerCase()
-      ]?.usd
-    : null;
-  const priceImpact = marketPrice && receivedPrice ? (1 - receivedPrice / marketPrice) * 100 : 0;
+  const receivedPrice = useMemo(() => {
+    return usdPrices
+      ? swapState.amountOut *
+          usdPrices[
+            swapState.tokenOut.address.toLowerCase() === ZERO_ADDRESS
+              ? WAVAX.toLowerCase()
+              : swapState.tokenOut.address.toLowerCase()
+          ]?.usd
+      : null;
+  }, [swapState.amountOut, usdPrices]);
+
+  const priceImpact = useMemo(() => {
+    return marketPrice && receivedPrice ? (1 - receivedPrice / marketPrice) * 100 : 0;
+  }, [receivedPrice]);
 
   const [gasPrice, setGasPrice] = useState(0);
   useEffect(() => {
@@ -127,24 +124,6 @@ export const SwapCard = (props: SwapProps) => {
     setGasPrice(gasInAVAX);
   }, [usdPrices, gasEstimate]);
 
-  // const setMaxAmount = (type: 'in' | 'out') => {
-  //   if (type === 'out') {
-  //     return;
-  //   }
-
-  //   const balance =
-  //     tokens.tokenIn.address.toLowerCase() === ZERO_ADDRESS.toLowerCase()
-  //       ? formatTokenBalance(userBalances.native, '18')
-  //       : formatTokenBalance(inputTokenUserBalance?.balance, inputTokenUserBalance?.decimals);
-
-  //   console.log();
-  //   if (!balance) {
-  //     return;
-  //   }
-
-  //   setAmountIn(Number(balance));
-  // };
-
   return (
     <div className="card overflow-visible shadow-lg bg-base-200/100 w-full">
       <div className="card-body">
@@ -152,13 +131,24 @@ export const SwapCard = (props: SwapProps) => {
           <SwapCardHeader />
         </div>
         <div className="mb-4 space-x-2">
-          <SwapCardInputs isSend tokenList={tokenList} />
+          <SwapCardInputs
+            isSend
+            tokenList={tokenList}
+            onTokenChange={props.onTokenChange}
+            onAmountInChange={props.onAmountInChange}
+            usdPrices={usdPrices}
+          />
         </div>
         <div className="flex items-center justify-center h-12">
           <SwapCardInputsSwapper />
         </div>
         <div className="mb-10 space-x-2">
-          <SwapCardInputs tokenList={tokenList} />
+          <SwapCardInputs
+            tokenList={tokenList}
+            onTokenChange={props.onTokenChange}
+            onAmountInChange={props.onAmountInChange}
+            usdPrices={usdPrices}
+          />
         </div>
         <div className="w-full">
           <SwapCardButton />

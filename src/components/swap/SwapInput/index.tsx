@@ -7,10 +7,16 @@ interface ISwapInputProps {
   setMaxAmount: () => void;
 }
 
+const styleInputDisabled = {
+  '--tw-border-opacity': 0.1,
+  borderColor: 'hsla(var(--bc) / var(--tw-border-opacity, 1))',
+};
+
 const SwapInput = ({ amount, setAmount, disabled, setMaxAmount }: ISwapInputProps) => {
   return (
     <div className="form-control h-full w-full relative">
       <NumberFormat
+        style={disabled ? styleInputDisabled : {}}
         value={amount}
         className="input input-bordered rounded-l-none px-0 pl-4 pr-12 w-full h-full"
         displayType="input"

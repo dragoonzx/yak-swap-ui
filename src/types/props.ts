@@ -5,22 +5,29 @@ import { TokenType } from '~/api/tokenList';
  */
 export type SwapProps = {
   /**
-   * Wallet and network provider. Apps can use a `Provider` subclass to hook
-   * into all transactions intitiated by the component.
+   * If true, then go to coingecko API for usd prices
    */
-  provider: any;
+  showUsdPrices?: boolean;
 
   /**
-   * Wallet address with which component will be interacting
-   * needed for swap & show balances functionality.
+   * Callback on token change
    */
-  userAddress: string;
+  onTokenChange?: (newToken: TokenType) => void;
 
   /**
-   * Wallet address balance
-   * needed for showing token & native balances
+   * Callback on amountIn change
    */
-  userBalances?: any;
+  onAmountInChange?: (newAmountIn: number) => void;
+
+  /**
+   * Callback when new offer received from YY Router
+   */
+  onOfferReceive?: (newOffer: any) => void;
+
+  /**
+   * Callback when quotes loading
+   */
+  onQuotesLoading?: (isLoading: boolean) => void;
 
   /**
    * Token list providing information for tokens used.
@@ -36,16 +43,6 @@ export type SwapProps = {
   referral?: any;
 
   /**
-   * The default `fromMint` to use when the component first renders.
-   */
-  fromMint?: any;
-
-  /**
-   * The default `toMint` to use when the component first renders.
-   */
-  toMint?: any;
-
-  /**
    * The initial amount for the `fromMint` to use when the component first
    * renders.
    */
@@ -56,19 +53,4 @@ export type SwapProps = {
    * renders.
    */
   toAmount?: number;
-
-  /**
-   * Styling properties for the main container.
-   */
-  containerStyle?: any;
-
-  /**
-   * Styling properties for the content container.
-   */
-  contentStyle?: any;
-
-  /**
-   * Styling properties for the from and to token containers.
-   */
-  swapTokenContainerStyle?: any;
 };

@@ -4,7 +4,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
-import path from "path";
+import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -27,8 +27,9 @@ export default defineConfig({
     lib: {
       entry: path.resolve(__dirname, './src/index.tsx'),
       name: 'yak-swap',
-      fileName: (format) => `yak-swap.${format}.js`
+      fileName: (format) => `yak-swap.${format}.js`,
     },
+    outDir: 'dist-vite',
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled
       // into your library
@@ -37,9 +38,9 @@ export default defineConfig({
         // Provide global variables to use in the UMD build
         // for externalized deps
         globals: {
-          react: 'React'
-        }
-      }
-    }
-  }
+          react: 'React',
+        },
+      },
+    },
+  },
 });

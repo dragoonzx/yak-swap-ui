@@ -7,3 +7,7 @@ export const formatTokenBalance = (balance?: string, decimals: string = '18') =>
 
   return new BigNumber(balance).times(new BigNumber(10).pow(-decimals)).toString();
 };
+
+export const formatCurrency = (number: number) => {
+  return new Intl.NumberFormat('en-US').format(number);
+};

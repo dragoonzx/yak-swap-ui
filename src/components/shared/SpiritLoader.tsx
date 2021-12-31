@@ -1,5 +1,7 @@
 import classNames from 'classnames';
-import loading from '~/assets/gif/loading-unscreen.gif';
+
+// const loadingGif = 'https://github.com/dragoonzx/yak-swap-ui/blob/master/src/assets/gif/loading-unscreen.gif';
+const loadingGif = 'https://i.ibb.co/4MNvsVc/loading-unscreen.gif';
 
 const SpiritLoader = ({ size = 'medium', className }: { size: 'small' | 'medium' | 'big'; className?: string }) => {
   const sizeClass = {
@@ -8,7 +10,7 @@ const SpiritLoader = ({ size = 'medium', className }: { size: 'small' | 'medium'
     big: 'h-32',
   }[size];
 
-  return <img src={loading} className={classNames(sizeClass, className)} />;
+  return <img src={loadingGif} className={classNames(sizeClass, className)} />;
 };
 
 export default SpiritLoader;

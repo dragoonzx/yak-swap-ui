@@ -28,29 +28,22 @@ const SwapCardHeader = () => {
   const [chainId, setChainId] = useState(0);
 
   useEffect(() => {
-    if (!userState.provider) {
-      return;
-    }
-
     const getChainId = async () => {
-      const chainId = await userState.provider.request({ method: 'eth_chainId' });
+      const chainId = await window.ethereum.request({ method: 'eth_chainId' });
       setChainId(chainId);
+      userState.chainId = chainId;
     };
 
     getChainId();
-  }, [userState.provider]);
+  }, []);
 
   useEffect(() => {
-    if (!userState.provider) {
-      return;
-    }
-
     window.ethereum.on('chainChanged', handleChainChanged);
 
     return () => {
       window.ethereum.removeListener('chainChanged', handleChainChanged);
     };
-  }, [userState.provider]);
+  }, []);
 
   return (
     <>
