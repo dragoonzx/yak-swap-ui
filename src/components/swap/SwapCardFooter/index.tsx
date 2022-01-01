@@ -7,9 +7,10 @@ interface ISwapCardFooter {
   usdPrices: any;
   priceImpact: any;
   gasPrice: any;
+  showUsdPrices?: boolean;
 }
 
-const SwapCardFooter = ({ usdPrices, priceImpact, gasPrice }: ISwapCardFooter) => {
+const SwapCardFooter = ({ usdPrices, priceImpact, gasPrice, showUsdPrices }: ISwapCardFooter) => {
   const gasCost = usdPrices ? (gasPrice * usdPrices[WAVAX.toLowerCase()]?.usd).toFixed(2) : 0;
   const minToReceiveUsd = useMemo(() => {
     return usdPrices
@@ -50,9 +51,9 @@ const SwapCardFooter = ({ usdPrices, priceImpact, gasPrice }: ISwapCardFooter) =
   }, [swapState.amountOut, usdPrices]);
 
   const minToReceive =
-    swapState.amountOut * 0.98 > 0
-      ? Number((swapState.amountOut * 0.98).toFixed(8)).toLocaleString()
-      : (swapState.amountOut * 0.98).toPrecision(8).toLocaleString();
+    swapState.amountOut * (1 - swapSettings.slippage / 100) > 0
+      ? Number((swapState.amountOut * (1 - swapSettings.slippage / 100)).toFixed(8)).toLocaleString()
+      : (swapState.amountOut * (1 - swapSettings.slippage / 100)).toPrecision(8).toLocaleString();
   return (
     <div className="font-light">
       {/* <div className="flex justify-between text-sm">
@@ -85,17 +86,19 @@ const SwapCardFooter = ({ usdPrices, priceImpact, gasPrice }: ISwapCardFooter) =
       <div className="flex justify-between text-sm">
         <span>Gas cost</span>
         <span>
-          <span className="font-light text-xs">~${gasCost}</span>
+          {showUsdPrices && <span className="font-light text-xs">~${gasCost}</span>}
           <span className="font-bold ml-2">{gasPrice.toPrecision(2)} AVAX</span>
         </span>
       </div>
       <div className="flex justify-between text-sm">
         <span>Min. to receive</span>
         <span>
-          <span className="font-light text-xs">
-            ~$
-            {minToReceiveUsd}
-          </span>
+          {showUsdPrices && (
+            <span className="font-light text-xs">
+              ~$
+              {minToReceiveUsd}
+            </span>
+          )}
           <span className="font-bold ml-2">
             {' '}
             {minToReceive} {swapState.tokenOut.symbol}

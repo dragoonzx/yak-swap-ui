@@ -4,7 +4,7 @@ import { swap } from '~/api/swap';
 import { useSnapshot } from 'valtio';
 import Moralis from 'moralis';
 import { useMoralis } from 'react-moralis';
-import { swapOfferState, swapState, userBalanceStore, userState } from '~/state';
+import { swapOfferState, swapSettings, swapState, userBalanceStore, userState } from '~/state';
 import { AVALANCHE_CHAIN_ID, ZERO_ADDRESS } from '~/utils/constants';
 import { useEffect } from 'react';
 import { formatTokenBalance } from '~/utils/formatters';
@@ -34,7 +34,6 @@ const SwapCardButton = () => {
         Moralis.Web3API.account.getTokenBalances(options),
         Moralis.Web3API.account.getNativeBalance(options),
       ]);
-      console.log(tokenBalances);
       userBalanceStore.tokens = tokenBalances[0];
       userBalanceStore.native = tokenBalances[1].balance;
     };
@@ -53,7 +52,7 @@ const SwapCardButton = () => {
 
     swapState.swapLoading = true;
 
-    const slippage = 20;
+    const slippage = swapSettings.slippage * 100;
 
     const offerWithSlippage = {
       ...currentOffer,

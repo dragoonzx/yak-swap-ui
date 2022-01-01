@@ -17,13 +17,8 @@ const handleChainChanged = () => {
   window.location.reload();
 };
 
-const SwapCardHeader = () => {
+const SwapCardHeader = ({ onSettingsChange, getSyncPrices }: { onSettingsChange?: any; getSyncPrices: () => void }) => {
   const { timerKey, sync } = useSnapshot(syncState);
-
-  const getSyncPrices = (): [boolean, number] => {
-    // getPrices();
-    return [true, 0];
-  };
 
   const [chainId, setChainId] = useState(0);
 
@@ -89,7 +84,7 @@ const SwapCardHeader = () => {
             onComplete={() => getSyncPrices()}
           />
         </button>
-        <SwapSettings btnStyle={customGhostBtnStyle} />
+        <SwapSettings onSettingsChange={onSettingsChange} btnStyle={customGhostBtnStyle} />
       </div>
     </>
   );

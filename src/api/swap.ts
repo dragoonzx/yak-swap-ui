@@ -16,7 +16,6 @@ export const swap = async (payload: any) => {
   const provider = window.ethereum;
   const web3 = new Web3(provider);
   const userAddress = userState.userAddress;
-  console.log(userAddress);
 
   if (userAddress) {
     const { trade, fromAVAX, toAVAX } = payload;

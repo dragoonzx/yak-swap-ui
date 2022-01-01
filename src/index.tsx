@@ -1,7 +1,8 @@
 import { ReactElement } from 'react';
+import { tokenList } from './api/tokenList';
 import { SwapCard } from './components/swap/SwapCard';
-import './index.css';
 import { SwapProps } from './types/props';
+import './index.css';
 
 /**
  * A`Swap` component that can be embedded into applications. To use,
@@ -19,5 +20,5 @@ import { SwapProps } from './types/props';
  * [[SwapProps]] documentation.
  */
 export default function YakSwap(props: SwapProps): ReactElement {
-  return <SwapCard {...props} />;
+  return <SwapCard {...props} tokenList={props.tokenList ?? tokenList} showUsdPrices={props.showUsdPrices ?? true} />;
 }

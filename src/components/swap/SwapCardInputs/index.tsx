@@ -13,9 +13,17 @@ interface ISwapCardInputsProps {
   usdPrices?: any;
   onTokenChange?: (newToken: TokenType) => void;
   onAmountInChange?: (newAmount: number) => void;
+  showUsdPrices?: boolean;
 }
 
-const SwapCardInputs = ({ isSend, tokenList, usdPrices, onTokenChange, onAmountInChange }: ISwapCardInputsProps) => {
+const SwapCardInputs = ({
+  isSend,
+  tokenList,
+  usdPrices,
+  onTokenChange,
+  onAmountInChange,
+  showUsdPrices,
+}: ISwapCardInputsProps) => {
   const userBalances = useSnapshot(userBalanceStore);
   const swapSnap = useSnapshot(swapState);
 
@@ -97,7 +105,7 @@ const SwapCardInputs = ({ isSend, tokenList, usdPrices, onTokenChange, onAmountI
           }}
         />
         <div className="relative w-full">
-          <span className="text-xs right-0 -bottom-6 absolute font-light">{inputUsdPrice}</span>
+          {showUsdPrices && <span className="text-xs right-0 -bottom-6 absolute font-light">{inputUsdPrice}</span>}
           <SwapInput
             disabled={tokenType === 'tokenOut'}
             amount={swapSnap[amountType]}

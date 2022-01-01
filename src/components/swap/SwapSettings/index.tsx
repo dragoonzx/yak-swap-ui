@@ -1,11 +1,23 @@
+import { useEffect } from 'react';
 import NumberFormat from 'react-number-format';
 import { useSnapshot } from 'valtio';
 import SpiritPopover from '~/components/shared/SpiritPopover';
 import { swapSettings } from '~/state';
 import { ADDRESSES } from '~/utils/constants';
 
-const SwapSettings = ({ btnStyle }: { btnStyle: any }) => {
+const SwapSettings = ({ btnStyle, onSettingsChange }: { btnStyle: any; onSettingsChange?: any }) => {
   const swapSettingsSnap = useSnapshot(swapSettings);
+
+  useEffect(() => {
+    if (!onSettingsChange) {
+      return;
+    }
+
+    onSettingsChange({
+      routers: swapSettings.routers,
+      slippage: swapSettings.slippage,
+    });
+  }, [swapSettings.routers, swapSettings.slippage]);
 
   const adaptersChange = (v: string) => {
     swapSettings.routers.includes(v)

@@ -23,6 +23,7 @@ const SwapExample = () => {
       </div>
       <div className="flex items-center justify-center h-full" style={{ width: '420px', margin: 'auto' }}>
         <YakSwap
+          showUsdPrices={false}
           tokenList={tokenList}
           onTokenChange={(token) => {
             console.log('gdthr', token);

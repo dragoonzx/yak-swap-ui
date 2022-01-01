@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Web3 from 'web3';
 // import { useMoralis, useMoralisCloudFunction } from 'react-moralis';
 import { fetchOnchainPrices } from '~/api/fetchPrices';
@@ -13,7 +13,7 @@ import SwapCardFooter from '../SwapCardFooter';
 import SwapCardButton from '../SwapCardButton';
 import SwapCardInputs from '../SwapCardInputs';
 import SwapCardInputsSwapper from '../SwapCardInputsSwapper';
-import { swapOfferState, swapState, syncState, useSnapshot } from '~/state';
+import { swapOfferState, swapSettings, swapState, syncState, useSnapshot } from '~/state';
 import { getUsdPrices } from '~/api/getUsdPrices';
 
 export const SwapCard = (props: SwapProps) => {
@@ -24,7 +24,7 @@ export const SwapCard = (props: SwapProps) => {
 
   const [gasEstimate, setGasEstimate] = useState<string>('');
 
-  const getPrices = async () => {
+  const getPrices = useCallback(async () => {
     swapState.loading = true;
     props.onQuotesLoading && props.onQuotesLoading(true);
     syncState.sync = false;
@@ -42,8 +42,6 @@ export const SwapCard = (props: SwapProps) => {
       // @ts-expect-error: toBN should eat BigNumber
       amountIn: Web3.utils.toBN(toBaseUnit(String(swapState.amountIn), swapState.tokenIn.decimals)),
     });
-
-    console.log(x);
 
     const results = x!.map((v) => {
       return {
@@ -70,20 +68,33 @@ export const SwapCard = (props: SwapProps) => {
     const prices = await getUsdPrices(swapState.tokenIn.address, swapState.tokenOut.address);
     setUsdPrices(prices);
 
+    syncState.timerKey += 1;
     syncState.sync = true;
     swapState.loading = false;
     props.onQuotesLoading && props.onQuotesLoading(false);
-  };
+  }, [
+    props.onQuotesLoading,
+    swapState.tokenIn,
+    swapState.tokenOut,
+    swapState.amountIn,
+    swapState.amountOut,
+    props.onOfferReceive,
+  ]);
+
+  const getSyncPrices = useCallback((): [boolean, number] => {
+    // getPrices();
+    return [false, 0];
+  }, [getPrices]);
 
   const swapSnap = useSnapshot(swapState);
+  const swapSettingsSnap = useSnapshot(swapSettings);
 
   const [,] = useDebounce(
     async () => {
       await getPrices();
-      syncState.timerKey += 1;
     },
     200,
-    [swapSnap.tokenIn, swapSnap.tokenOut, swapSnap.amountIn]
+    [swapSnap.tokenIn, swapSnap.tokenOut, swapSnap.amountIn, swapSettingsSnap.routers, swapSettingsSnap.slippage]
   );
 
   const marketPrice = usdPrices
@@ -128,7 +139,7 @@ export const SwapCard = (props: SwapProps) => {
     <div className="card overflow-visible shadow-lg bg-base-200/100 w-full">
       <div className="card-body">
         <div className="flex items-center justify-between mb-6 -mt-4">
-          <SwapCardHeader />
+          <SwapCardHeader getSyncPrices={getSyncPrices} onSettingsChange={props.onSettingsChange} />
         </div>
         <div className="mb-4 space-x-2">
           <SwapCardInputs
@@ -137,6 +148,7 @@ export const SwapCard = (props: SwapProps) => {
             onTokenChange={props.onTokenChange}
             onAmountInChange={props.onAmountInChange}
             usdPrices={usdPrices}
+            showUsdPrices={props.showUsdPrices}
           />
         </div>
         <div className="flex items-center justify-center h-12">
@@ -148,13 +160,19 @@ export const SwapCard = (props: SwapProps) => {
             onTokenChange={props.onTokenChange}
             onAmountInChange={props.onAmountInChange}
             usdPrices={usdPrices}
+            showUsdPrices={props.showUsdPrices}
           />
         </div>
         <div className="w-full">
           <SwapCardButton />
         </div>
         <div className="mt-4">
-          <SwapCardFooter priceImpact={priceImpact} gasPrice={gasPrice} usdPrices={usdPrices} />
+          <SwapCardFooter
+            priceImpact={priceImpact}
+            gasPrice={gasPrice}
+            usdPrices={usdPrices}
+            showUsdPrices={props.showUsdPrices}
+          />
         </div>
       </div>
     </div>
