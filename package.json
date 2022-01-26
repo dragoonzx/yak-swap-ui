@@ -1,18 +1,18 @@
 {
   "name": "@yak-spirit/yak-swap-ui",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "license": "GPL-3.0-or-later",
   "author": "dragoonzx",
   "files": [
     "dist"
   ],
   "source": "src/index.tsx",
-  "main": "./dist/yak-swap.umd.js",
-  "module": "./dist/yak-swap.es.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
   "exports": {
     ".": {
-      "import": "./dist/yak-swap.es.js",
-      "require": "./dist/yak-swap.umd.js"
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
     }
   },
   "scripts": {
