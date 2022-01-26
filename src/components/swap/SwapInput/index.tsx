@@ -18,7 +18,7 @@ const SwapInput = ({ amount, setAmount, disabled, setMaxAmount }: ISwapInputProp
       <NumberFormat
         style={disabled ? styleInputDisabled : {}}
         value={amount}
-        className="input input-bordered rounded-l-none px-0 pl-4 pr-12 w-full h-full"
+        className="input input-bordered focus:shadow-none hover:border-opacity-40 focus:border-opacity-40 rounded-l-none px-0 pl-4 pr-12 w-full h-full"
         displayType="input"
         allowNegative={false}
         disabled={disabled}

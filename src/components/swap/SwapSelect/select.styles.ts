@@ -17,12 +17,14 @@ export const colourStyles = {
       ...styles[':focus'],
       outline: '2px solid transparent',
       outlineOffset: '2px',
-      boxShadow: '0 0 0 2px hsl(var(--b1)), 0 0 0 4px hsla(var(--bc) / .2)',
+      borderColor: 'hsla(var(--bc) / 0.4)',
+      // borderOpacity: 0.6,
+      // boxShadow: '0 0 0 2px hsl(var(--b1)), 0 0 0 4px hsla(var(--bc) / .2)',
     },
     ':hover': {
       ...styles[':hover'],
-      borderColor: 'hsla(var(--bc) / 0.2)',
-      boxShadow: '0 0 0 2px hsl(var(--b1)), 0 0 0 4px hsla(var(--bc) / .2)',
+      borderColor: 'hsla(var(--bc) / 0.4)',
+      // boxShadow: '0 0 0 2px hsl(var(--b1)), 0 0 0 4px hsla(var(--bc) / .2)',
     },
   }),
   input: (styles: any) => ({

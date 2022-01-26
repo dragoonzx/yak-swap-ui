@@ -69,7 +69,7 @@ const SwapCardHeader = ({ onSettingsChange, getSyncPrices }: { onSettingsChange?
         ) : null}
       </h2>
       <div className="flex items-center">
-        <button type="button" className="btn btn-ghost mr-1" style={customGhostBtnStyle}>
+        <button type="button" onClick={getSyncPrices} className="btn btn-ghost mr-1" style={customGhostBtnStyle}>
           <CountdownCircleTimer
             key={timerKey}
             isPlaying={sync}

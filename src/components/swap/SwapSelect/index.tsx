@@ -47,7 +47,7 @@ const SwapSelect = ({ token, setToken, tokenList }: ISwapSelectProps) => {
     <div className="w-full relative">
       <img src={token.logoURI} alt="" className="h-6 absolute z-10 top-1/2 left-2 -translate-y-1/2 rounded" />
       <WindowedSelect
-        className="h-full"
+        className="h-full focus:shadow-none focus:border-opacity-40"
         value={token}
         onChange={setToken}
         components={{ Option }}
