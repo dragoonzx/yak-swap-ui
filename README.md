@@ -31,9 +31,10 @@ npx tailwindcss init -p
 ```
 
 Configure tailwind.config.js (example configuration in yak-spirit repo)
+You need something like './node_modules/@yak-spirit/yak-swap-ui/\*\*/\*.js' in tailwind.config content array
 Add tailwind directives to your CSS and import .css file
 
-plus import toastify styles
+And import toastify styles
 
 ```javascript
 import 'react-toastify/dist/ReactToastify.css';
