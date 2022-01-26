@@ -1,6 +1,9 @@
 import { MoralisProvider } from 'react-moralis';
 import SwapExample from './SwapExample';
 
+import '../src/index.css';
+import 'react-toastify/dist/ReactToastify.css';
+
 const MORALIS_APP_ID = 'rthX7a3rcVGAfiUj6AocOY6ZTM64E3EVrm8wKQ8O';
 const MORALIS_SERVER_URL = 'https://ami09h70nxqb.usemoralis.com:2053/server';
 

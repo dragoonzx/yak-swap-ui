@@ -37,13 +37,13 @@ const SwapSettings = ({ btnStyle, onSettingsChange }: { btnStyle: any; onSetting
   );
 
   const content = (
-    <div className="overflow-hidden rounded-lg shadow-lg w-70 ring-1 ring-black ring-opacity-5">
+    <div className="overflow-hidden rounded-lg shadow-lg w-70 ring-1 border border-primary-focus border-opacity-40 ring-black ring-opacity-5">
       <div className="relative flex flex-col w-full p-7 lg:grid-cols-2 bg-base-100 text-base-content">
         <div className="mb-4">
           <p className="text-sm mb-2">Slippage tolerance</p>
           <NumberFormat
             value={swapSettingsSnap.slippage}
-            className="input input-bordered border-primary-focus p-2 w-16 h-full"
+            className="input rounded border-primary-focus border-opacity-60 p-2 w-16 h-full"
             displayType="input"
             allowNegative={false}
             suffix="%"
@@ -61,7 +61,7 @@ const SwapSettings = ({ btnStyle, onSettingsChange }: { btnStyle: any; onSetting
           <p className="text-sm mb-2">
             Liquidity sources ({swapSettingsSnap.routers.length}/{ADDRESSES.routers.length})
           </p>
-          <div className="max-h-32 rounded border w-44 border-primary-focus overflow-auto">
+          <div className="max-h-32 rounded border w-44 border-primary-focus border-opacity-60 overflow-auto">
             {ADDRESSES.routers.map((v) => (
               <div className="px-4 mb-1 card" key={v.platform}>
                 <div className="form-control">

@@ -2,7 +2,7 @@ import { ReactElement } from 'react';
 import { tokenList } from './api/tokenList';
 import { SwapCard } from './components/swap/SwapCard';
 import { SwapProps } from './types/props';
-import './index.css';
+import { ToastContainer } from 'react-toastify';
 
 /**
  * A`Swap` component that can be embedded into applications. To use,
@@ -20,5 +20,10 @@ import './index.css';
  * [[SwapProps]] documentation.
  */
 export default function YakSwap(props: SwapProps): ReactElement {
-  return <SwapCard {...props} tokenList={props.tokenList ?? tokenList} showUsdPrices={props.showUsdPrices ?? true} />;
+  return (
+    <>
+      <SwapCard {...props} tokenList={props.tokenList ?? tokenList} showUsdPrices={props.showUsdPrices ?? true} />
+      <ToastContainer position="bottom-right" />
+    </>
+  );
 }

@@ -2,6 +2,8 @@
 
 # `🐃 @yak-spirit/yak-swap-ui`
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
 A reusable React component for swapping with Yield Yak Router. The YY Router can be
 found [here](https://github.com/yieldyak/yak-aggregator).
 
@@ -15,7 +17,7 @@ Usage example:
 First install the required peer dependencies into your React project.
 
 ```
-yarn add web3 bignumber.js react-use react-countdown-circle-timer valtio react-number-format @headlessui/react classnames react-windowed-select react-moralis moralis daisyui
+yarn add web3 bignumber.js react-use react-countdown-circle-timer valtio react-number-format @headlessui/react classnames react-windowed-select react-moralis moralis daisyui eth-permit react-toastify
 ```
 
 Wrap your app in MoralisProvider, provide appId & serverId (server should support Avalanche Mainnet)
@@ -28,8 +30,14 @@ yarn add -D tailwindcss postcss autoprefixer
 npx tailwindcss init -p
 ```
 
-Configure tailwind.config.js
+Configure tailwind.config.js (example configuration in yak-spirit repo)
 Add tailwind directives to your CSS and import .css file
+
+plus import toastify styles
+
+```javascript
+import 'react-toastify/dist/ReactToastify.css';
+```
 
 ⚠️ if you have webpack >= 5 or cra >= 5, you should do some manipulations to include node-compatible dependencies. Check examples.
 

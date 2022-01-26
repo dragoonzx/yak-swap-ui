@@ -52,7 +52,14 @@ export const SwapCard = (props: SwapProps) => {
           : 0,
       };
     });
-    props.onOfferReceive && props.onOfferReceive(results);
+    props.onOfferReceive &&
+      props.onOfferReceive({
+        tokens: {
+          tokenIn: swapState.tokenIn,
+          tokenOut: swapState.tokenOut,
+        },
+        results,
+      });
 
     const amountOutValues = results.map((v) => Number(v.formattedAmountOut));
 
@@ -82,7 +89,7 @@ export const SwapCard = (props: SwapProps) => {
   ]);
 
   const getSyncPrices = useCallback((): [boolean, number] => {
-    // getPrices();
+    getPrices();
     return [false, 0];
   }, [getPrices]);
 

@@ -58,7 +58,7 @@ export const fetchOnchainPrices = async (payload: { fromToken: string; toToken: 
     );
 
     try {
-      const yakOffer = await fetchOnchainPricesV2(payload);
+      const yakOffer = await fetchYakOffer(payload);
       prices.push({
         platform,
         amountOut: yakOffer.amounts[yakOffer.amounts.length - 1],
@@ -72,7 +72,7 @@ export const fetchOnchainPrices = async (payload: { fromToken: string; toToken: 
   }
 };
 
-const fetchOnchainPricesV2 = async (payload: { fromToken: string; toToken: string; amountIn: BigNumber }) => {
+const fetchYakOffer = async (payload: { fromToken: string; toToken: string; amountIn: BigNumber }) => {
   if (chainId && provider) {
     const { fromToken, toToken, amountIn } = payload;
     const yakRouterContract = new web3.eth.Contract(YakRouterABI as AbiItem[], yakRouterAddress);
@@ -83,7 +83,7 @@ const fetchOnchainPricesV2 = async (payload: { fromToken: string; toToken: strin
         .call();
       return data;
     } catch (err) {
-      console.error('fetchOnChainPricesV2', err);
+      console.error('fetchYakOffer', err);
     }
   }
 };

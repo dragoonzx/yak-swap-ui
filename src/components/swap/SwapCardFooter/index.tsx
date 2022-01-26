@@ -79,7 +79,7 @@ const SwapCardFooter = ({ usdPrices, priceImpact, gasPrice, showUsdPrices }: ISw
         <span>Price impact</span>
         <span>
           <span className="flex font-bold">
-            {priceImpact.toFixed(4)} %{/* <SpiritLoader size="small" /> */}
+            {Number(priceImpact.toFixed(4)).toLocaleString()} %{/* <SpiritLoader size="small" /> */}
           </span>
         </span>
       </div>
@@ -87,7 +87,7 @@ const SwapCardFooter = ({ usdPrices, priceImpact, gasPrice, showUsdPrices }: ISw
         <span>Gas cost</span>
         <span>
           {showUsdPrices && <span className="font-light text-xs">~${gasCost}</span>}
-          <span className="font-bold ml-2">{gasPrice.toPrecision(2)} AVAX</span>
+          <span className="font-bold ml-2">{Number(gasPrice.toPrecision(2)).toLocaleString()} AVAX</span>
         </span>
       </div>
       <div className="flex justify-between text-sm">

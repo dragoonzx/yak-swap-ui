@@ -2,11 +2,12 @@ import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
 import PairABI from '~/abis/PairABI.json';
 import YakRouterABI from '~/abis/YakRouter.json';
-import { ADDRESSES, AVALANCHE_CHAIN_ID } from '~/utils/constants';
+import { ADDRESSES } from '~/utils/constants';
 import { BigNumber } from 'bignumber.js';
 import { userState } from '~/state';
-
-const chainId = AVALANCHE_CHAIN_ID;
+import { tokenList } from './tokenList';
+import { toast } from 'react-toastify';
+import { signERC2612Permit } from 'eth-permit';
 
 const MaxUint256: BigNumber | string = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 const yakRouterAddress = ADDRESSES.helpers.yakRouter;
@@ -37,35 +38,39 @@ export const swap = async (payload: any) => {
             fee
           )
           .send({ from: userAddress, value: trade.amounts[0] });
+
+        if (tx.status) {
+          toast.success('Swap success');
+        } else {
+          toast.error('Swap failed');
+        }
         return tx;
       } else {
         // handle approval
         const fromTokenAddress = trade.path[0];
-        // get if permit from token is supported
-        // const permitSupported = TokenList[chainId].filter(
-        //   (token) => token.address.toLowerCase() == fromTokenAddress.toLowerCase()
-        // )[0].permitSupported;
-        const permitSupported = true;
+        const permitSupported = tokenList.find(
+          (token) => token.address.toLowerCase() === fromTokenAddress.toLowerCase()
+        )?.permitSupported;
+
         const tokenContract = new web3.eth.Contract(PairABI as AbiItem[], fromTokenAddress, {
           from: userAddress,
         });
         const approvedBalance = await tokenContract.methods.allowance(userAddress, yakRouterAddress).call();
         try {
-          if (!permitSupported) throw new Error('Permit not supported');
-          if (new BigNumber(approvedBalance).gte(trade.amounts[0])) throw new Error('Permit not needed');
+          if (!permitSupported) {
+            throw new Error('Permit not supported');
+          }
+          if (new BigNumber(approvedBalance).gte(trade.amounts[0])) {
+            throw new Error('Permit not needed');
+          }
 
-          const deadline = Math.floor(Date.now() / 1000) + 1200; // now plus 20 mins
-
-          const params = await getPermitParams({
-            tokenContract,
+          const signature = await signERC2612Permit(
+            provider,
+            trade.path[0],
             userAddress,
-            chainId,
-            spender: yakRouterAddress,
-            amount: trade.amounts[0],
-            deadline,
-          });
-
-          const signature = await provider.request({ method: 'eth_signTypedData_v4', params });
+            yakRouterAddress,
+            trade.amounts[0]
+          );
 
           if (toAVAX) {
             const tx = await yakRouterContract.methods
@@ -78,12 +83,18 @@ export const swap = async (payload: any) => {
                 },
                 userAddress,
                 fee,
-                deadline.toString(),
-                parseInt(signature.substring(2).substring(128, 130), 16),
-                Web3.utils.hexToBytes(`0x${signature.substring(2).substring(0, 64)}`),
-                Web3.utils.hexToBytes(`0x${signature.substring(2).substring(64, 128)}`)
+                signature.deadline,
+                signature.v,
+                signature.r,
+                signature.s
               )
               .send({ from: userAddress });
+
+            if (tx.status) {
+              toast.success('Swap success');
+            } else {
+              toast.error('Swap failed');
+            }
             return tx;
           } else {
             const tx = await yakRouterContract.methods
@@ -96,12 +107,18 @@ export const swap = async (payload: any) => {
                 },
                 userAddress,
                 fee,
-                deadline.toString(),
-                parseInt(signature.substring(2).substring(128, 130), 16),
-                Web3.utils.hexToBytes(`0x${signature.substring(2).substring(0, 64)}`),
-                Web3.utils.hexToBytes(`0x${signature.substring(2).substring(64, 128)}`)
+                signature.deadline,
+                signature.v,
+                signature.r,
+                signature.s
               )
               .send({ from: userAddress });
+
+            if (tx.status) {
+              toast.success('Swap success');
+            } else {
+              toast.error('Swap failed');
+            }
             return tx;
           }
         } catch {
@@ -123,6 +140,12 @@ export const swap = async (payload: any) => {
                   fee
                 )
                 .send({ from: userAddress });
+
+              if (tx.status) {
+                toast.success('Swap success');
+              } else {
+                toast.error('Swap failed');
+              }
               return tx;
             } else {
               const tx = await yakRouterContract.methods
@@ -137,73 +160,25 @@ export const swap = async (payload: any) => {
                   fee
                 )
                 .send({ from: userAddress });
+
+              if (tx.status) {
+                toast.success('Swap success');
+              } else {
+                toast.error('Swap failed');
+              }
               return tx;
             }
           } catch (err) {
             console.error('swap', err);
+            toast.error('Swap error');
             return false;
           }
         }
       }
     } catch (err) {
-      console.log('swap', err);
+      console.error('swap', err);
+      toast.error('Swap error');
       return false;
     }
   }
 };
-
-const version = '1';
-const types = {
-  EIP712Domain: [
-    { name: 'name', type: 'string' },
-    { name: 'version', type: 'string' },
-    { name: 'chainId', type: 'uint256' },
-    { name: 'verifyingContract', type: 'address' },
-  ],
-  Permit: [
-    { name: 'owner', type: 'address' },
-    { name: 'spender', type: 'address' },
-    { name: 'value', type: 'uint256' },
-    { name: 'nonce', type: 'uint256' },
-    { name: 'deadline', type: 'uint256' },
-  ],
-};
-
-async function getPermitParams(payload: any) {
-  // Approval function for EIP-712
-  // Note: this solution uses provider.sent("eth_signTypedData_v4", ...)
-  // instead of experimental _signTypedData. This is not supported by Ledger
-  // and Trezor. There is no fallback for normal approvals.
-  // See https://github.com/ethers-io/ethers.js/issues/298
-  const { tokenContract, account, chainId, spender, amount, deadline } = payload;
-
-  const name = await tokenContract.methods.name().call(); // token name
-  const verifyingContract = tokenContract.options.address;
-
-  const nonce = await tokenContract.nonces(account).call();
-
-  const domain = {
-    name,
-    version,
-    chainId,
-    verifyingContract,
-  };
-
-  const value = {
-    owner: account,
-    spender: spender,
-    value: amount.toString(),
-    nonce: nonce.toString(),
-    deadline: deadline.toString(),
-  };
-
-  const msgParams = JSON.stringify({
-    types,
-    domain,
-    primaryType: 'Permit',
-    message: value,
-  });
-
-  const params = [account, msgParams];
-  return params;
-}

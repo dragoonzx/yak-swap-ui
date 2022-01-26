@@ -22,6 +22,13 @@ export type SwapProps = {
 
   /**
    * Callback when new offer received from YY Router
+   * @returns {
+   *  tokens: {
+   *    tokenIn: TokenType,
+   *    tokenOut: TokenType
+   *  },
+   *  results: YakOffer
+   * }
    */
   onOfferReceive?: (newOffer: any) => void;
 
