@@ -10,6 +10,8 @@ found [here](https://github.com/yieldyak/yak-aggregator).
 Usage example:
 [Yak Spirit](https://github.com/dragoonzx/yak-spirit)
 
+<img src="./src/assets/images/yak-spirit/screenshot.png" width="450" alt="" />
+
 # Usage
 
 #### Install
