@@ -7,6 +7,8 @@
 A reusable React component for swapping with Yield Yak Router. The YY Router can be
 found [here](https://github.com/yieldyak/yak-aggregator).
 
+[npm component](https://www.npmjs.com/package/@yak-spirit/yak-swap-ui)
+
 Usage example:
 [Yak Spirit](https://github.com/dragoonzx/yak-spirit)
 
