@@ -28,7 +28,7 @@ Just insert this iframe
 
 example https://codesandbox.io/s/xenodochial-shtern-neh7b?file=/index.html
 
-#### Install
+#### React component
 
 First install the required peer dependencies into your React project.
 
