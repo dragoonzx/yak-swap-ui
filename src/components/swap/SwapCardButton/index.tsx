@@ -22,26 +22,26 @@ const SwapCardButton = () => {
     userState.userAddress = user.get('ethAddress') ?? '';
   }, [user]);
 
+  const getUserBalances = async () => {
+    if (!user) {
+      return;
+    }
+
+    const options: { chain: 'avalanche'; address: string } = { chain: 'avalanche', address: user.get('ethAddress') };
+
+    try {
+      const tokenBalances = await Promise.all([
+        Moralis.Web3API.account.getTokenBalances(options),
+        Moralis.Web3API.account.getNativeBalance(options),
+      ]);
+      userBalanceStore.tokens = tokenBalances[0];
+      userBalanceStore.native = tokenBalances[1].balance;
+    } catch (err) {
+      console.error('error in fetching user balances');
+    }
+  };
+
   useEffect(() => {
-    const getUserBalances = async () => {
-      if (!user) {
-        return;
-      }
-
-      const options: { chain: 'avalanche'; address: string } = { chain: 'avalanche', address: user.get('ethAddress') };
-
-      try {
-        const tokenBalances = await Promise.all([
-          Moralis.Web3API.account.getTokenBalances(options),
-          Moralis.Web3API.account.getNativeBalance(options),
-        ]);
-        userBalanceStore.tokens = tokenBalances[0];
-        userBalanceStore.native = tokenBalances[1].balance;
-      } catch (err) {
-        console.error('error in fetching user balances');
-      }
-    };
-
     getUserBalances();
   }, [user]);
 
@@ -79,6 +79,7 @@ const SwapCardButton = () => {
 
     try {
       await swap(payload);
+      await getUserBalances();
     } finally {
       swapState.swapLoading = false;
     }
