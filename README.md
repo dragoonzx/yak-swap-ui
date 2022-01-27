@@ -16,6 +16,18 @@ Usage example:
 
 # Usage
 
+You can use swap as iframe or as React component:
+
+#### Iframe
+
+Just insert this iframe
+
+```html
+<iframe width="400" height="525" src="https://yak-swap-ui-example.vercel.app/"></iframe>
+```
+
+example https://codesandbox.io/s/xenodochial-shtern-neh7b?file=/index.html
+
 #### Install
 
 First install the required peer dependencies into your React project.
