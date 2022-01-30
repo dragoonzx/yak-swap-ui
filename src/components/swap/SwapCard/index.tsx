@@ -158,7 +158,7 @@ export const SwapCard = (props: SwapProps) => {
             showUsdPrices={props.showUsdPrices}
           />
         </div>
-        <div className="flex items-center justify-center h-12">
+        <div className="flex items-center justify-center relative h-12">
           <SwapCardInputsSwapper />
         </div>
         <div className="mb-10 space-x-2">

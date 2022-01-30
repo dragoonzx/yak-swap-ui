@@ -33,7 +33,7 @@ example https://codesandbox.io/s/xenodochial-shtern-neh7b?file=/index.html
 First install the required peer dependencies into your React project.
 
 ```
-yarn add web3 bignumber.js react-use react-countdown-circle-timer valtio react-number-format @headlessui/react classnames react-windowed-select react-moralis moralis daisyui eth-permit react-toastify
+yarn add web3 bignumber.js react-use react-countdown-circle-timer valtio react-number-format @headlessui/react classnames react-windowed-select react-moralis moralis daisyui eth-permit react-toastify react-transition-group
 ```
 
 Wrap your app in MoralisProvider, provide appId & serverId (server should support Avalanche Mainnet)
