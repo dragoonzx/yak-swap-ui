@@ -24,6 +24,11 @@ const SwapCardHeader = ({ onSettingsChange, getSyncPrices }: { onSettingsChange?
 
   useEffect(() => {
     const getChainId = async () => {
+      if (!window.ethereum) {
+        setChainId(0);
+        return;
+      }
+
       const chainId = await window.ethereum.request({ method: 'eth_chainId' });
       setChainId(chainId);
       userState.chainId = chainId;
@@ -33,9 +38,16 @@ const SwapCardHeader = ({ onSettingsChange, getSyncPrices }: { onSettingsChange?
   }, []);
 
   useEffect(() => {
+    if (!window.ethereum) {
+      return;
+    }
+
     window.ethereum.on('chainChanged', handleChainChanged);
 
     return () => {
+      if (!window.ethereum) {
+        return;
+      }
       window.ethereum.removeListener('chainChanged', handleChainChanged);
     };
   }, []);
