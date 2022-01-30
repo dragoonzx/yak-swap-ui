@@ -37,6 +37,7 @@ const SwapCardInputsSwapper = () => {
             className="absolute"
             style={{
               ...defaultStyle,
+              // @ts-expect-error
               ...transitionStyles[state],
             }}
           >
@@ -50,6 +51,7 @@ const SwapCardInputsSwapper = () => {
             className="absolute"
             style={{
               ...defaultStyle,
+              // @ts-expect-error
               ...transitionStyles[state],
             }}
           >
